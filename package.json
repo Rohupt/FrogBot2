@@ -1,0 +1,29 @@
+{
+  "name": "frogbot2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pham Trung Hieu",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^3.2.4",
+    "chokidar": "^3.5.3",
+    "discord.js": "^14.6.0",
+    "dotenv": "^16.0.3",
+    "lodash": "^4.17.21",
+    "mathjs": "^11.3.1",
+    "module-alias": "^2.2.2",
+    "mongoose": "^6.6.7"
+  },
+  "_moduleAliases": {
+    "@root": ".",
+    "@data": "./Data",
+    "@modules": "./Modules",
+    "@events": "./Events",
+    "@util": "./Utilities"
+  }
+}
