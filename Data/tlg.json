@@ -9,6 +9,42 @@
   "roleplayCat": "634459112050130977",
   "discussCat": "638051953666031627",
   "advLeagueCat": "706856741123522560",
-  "archiveCat": "893857837418176623",
-  "beyondChannel": "676102199423795220"
+  "archiveCat": "1037232023519109130",
+  "beyondChannel": "676102199423795220",
+  "permissions": {
+    "textDM": {
+      "SendMessages": true,
+      "ManageMessages": true
+    },
+    "voiceDM": {
+      "SendMessages": true,
+      "ManageMessages": true,
+      "Connect": true,
+      "Speak": true,
+      "Stream": true,
+      "MuteMembers": true,
+      "DeafenMembers": true,
+      "MoveMembers": true
+    },
+    "textRole": {
+      "ViewChannel": true
+    },
+    "voiceRole": {
+      "ViewChannel": true,
+      "Connect": true
+    },
+    "discObsv": {
+      "ViewChannel": true
+    },
+    "textObsv": {
+      "ViewChannel": true,
+      "SendMessages": false
+    },
+    "voiceObsv": {
+      "ViewChannel": true,
+      "Connect": true,
+      "Speak": false,
+      "SendMessages": false
+    }
+  }
 }

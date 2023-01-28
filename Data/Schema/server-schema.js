@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const serverSchema = new mongoose.Schema({
+const ServerSchema = new mongoose.Schema({
     _id: String,
     prefix: {
         type: String,
@@ -9,4 +9,10 @@ const serverSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Server', serverSchema, 'servers');
+let ServerModel;
+try {
+    ServerModel = mongoose.model("Server");
+} catch (err) {
+    ServerModel = mongoose.model("Server", ServerSchema, "servers");
+}
+module.exports = ServerModel;
