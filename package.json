@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "removeLimit": "echo \"fs.inotify.max_user_watches=524288\" \\ | sudo tee -a /etc/sysctl.conf",
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
