@@ -158,11 +158,11 @@ client.log = (cat = "LOG", message = "", prependLines = 0, appendLines = 0) => {
         ["LOG", "\x1b[37m"], // white
     ]);
     cat = cat.toUpperCase();
-    if (prependLines > 1) console.log("".padEnd(prependLines - 1, "\n"), "\b".padEnd(breakLength, "="));
+    if (prependLines > 1) console.log("".padEnd(prependLines - 1, "\n").padEnd(breakLength + prependLines - 1, "="));
     else if (prependLines > 0) console.log("".padEnd(prependLines, "\n"));
     process.stdout.write(`[${colours.get(cat) ?? "\x1b[0m"}${cat.padStart(cat.length + Math.floor((11 - cat.length) / 2)).padEnd(11)}\x1b[0m] `);
     console.log(message);
-    if (appendLines > 1) console.log("".padEnd(breakLength, "="), "".padEnd(appendLines - 1, "\n"));
+    if (appendLines > 1) console.log("".padEnd(breakLength, "=").padEnd(breakLength + appendLines - 1, "\n"));
     else if (appendLines > 0) console.log("".padEnd(appendLines, "\n"));
 };
 

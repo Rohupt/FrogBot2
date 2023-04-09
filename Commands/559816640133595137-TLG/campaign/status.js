@@ -9,7 +9,7 @@ module.exports = {
     botPermissions: [PFB.ManageChannels, PFB.ManageRoles],
     data: new Discord.SlashCommandSubcommandBuilder()
         .setName(name)
-        .setDescription("Modify the Dungeon Master of the campaign.")
+        .setDescription("Modify the status of the campaign.")
         .addStringOption((o) =>
             o
                 .setName("campaign")

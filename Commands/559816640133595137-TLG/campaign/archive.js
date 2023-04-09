@@ -72,6 +72,7 @@ module.exports = {
         }
         for (p of camp.players) {
             let player = await guild.members.resolve(p.id);
+            if (!player) continue; // Member already left the server
             if (!player.roles.cache.some((r) => r.position > campRoleMinPos && r.position < campRoleMaxPos)) await player.roles.add(noCampRoleID);
         }
 

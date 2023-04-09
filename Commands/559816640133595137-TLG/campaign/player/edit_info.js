@@ -42,7 +42,7 @@ module.exports = {
         await ia.deferReply();
         let camp = await ia.client.util.findCamp(campArg);
         if (!camp) return ia.editReply({ content: "Cannot find the campaign. Please recheck the name provided." });
-        if (ia.user.id != camp.DM && !ia.member.roles.cache.some((r) => r.id == tlg.modRoleID) && !ia.member.permissions.has("ADMINISTRATOR")) {
+        if (ia.user.id != camp.DM && !ia.member.roles.cache.some((r) => r.id == tlg.modRoleID) && !ia.member.permissions.has(PFB.Administrator)) {
             return await ia.editReply({
                 embeds: [ia.embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.")],
             });
@@ -51,7 +51,7 @@ module.exports = {
         let player = ia.options.getMember("player") ?? ia.member;
         let campPlayer = camp.players.find((p) => p.id == player.id);
         if (!campPlayer) return await ia.editReply({ embeds: [ia.embed.setDescription("The member is not a player of this campaign.")] });
-        if (ia.member.id != player.id && !ia.member.roles.cache.some((r) => r.id == tlg.modRoleID) && !ia.member.permissions.has("ADMINISTRATOR"))
+        if (ia.member.id != player.id && !ia.member.roles.cache.some((r) => r.id == tlg.modRoleID) && !ia.member.permissions.has(PFB.Administrator))
             return await ia.editReply({ embeds: [ia.embed.setDescription("You cannot set the links for another player.")] });
 
         let sheet = ia.options.getString("sheet");

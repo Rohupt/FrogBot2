@@ -58,7 +58,7 @@ module.exports = {
         }
 
         let resultField = "|";
-        camp.players.forEach((p) => (resultField += ` ${p} |`));
+        camp.players.forEach((p) => (resultField += ` <@!${p.id}> |`));
         ia.embed
             .setTitle(camp.name)
             .setDescription("Modification completed. Please check:")

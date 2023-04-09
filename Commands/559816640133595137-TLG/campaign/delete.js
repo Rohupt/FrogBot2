@@ -27,15 +27,16 @@ module.exports = {
         const dm = guild.members.resolve(camp.DM);
         try {
             Promise.all([
-                guild.channels.resolve(camp.roleplayChannel).delete(),
-                guild.channels.resolve(camp.discussChannel).delete(),
-                guild.roles.resolve(camp.role).delete(),
+                guild.channels.resolve(camp.roleplayChannel)?.delete(),
+                guild.channels.resolve(camp.discussChannel)?.delete(),
+                guild.roles.resolve(camp.role)?.delete(),
             ]);
         } catch (error) {
             console.error(error);
             ia.embed.setDescription("...oops, seems like there is an error. Deletion incomplete. Please continue manually.");
             ia.editReply({ embeds: [ia.embed] });
-            return ia.followUp(`\`\`\`\n${error}\n\`\`\``);
+            await ia.followUp(`\`\`\`\n${error}\n\`\`\``);
+            return false;
         }
 
         const campRoleMaxPos = guild.roles.resolve(noCampRoleID).position,
@@ -47,6 +48,7 @@ module.exports = {
         }
         for (p of camp.players) {
             let player = await guild.members.resolve(p.id);
+            if (!player) continue; // Member already left the server
             if (!player.roles.cache.some((r) => r.position > campRoleMinPos && r.position < campRoleMaxPos)) await player.roles.add(noCampRoleID);
         }
 

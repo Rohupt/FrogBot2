@@ -22,7 +22,7 @@ module.exports = {
             return await ia.editReply({ embeds: [ia.embed.setDescription(`Developer Mode is \`${ia.client.developerMode ? "ON" : "OFF"}\`.`)] });
         } else {
             ia.client.developerMode = sw == -1 ? !ia.client.developerMode : !!sw;
-            await client.util.setConfig('developerMode', state);
+            await ia.client.util.setConfig('developerMode', ia.client.developerMode);
             ia.client.user.setActivity(`${ia.client.developerMode ? "the dev only" : "everyone"}`, { type: Discord.ActivityType.Listening });
             return await ia.editReply({ embeds: [ia.embed.setDescription(`Developer Mode is now \`${ia.client.developerMode ? "ON" : "OFF"}\`.`)] });
         }

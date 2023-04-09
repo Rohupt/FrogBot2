@@ -2,7 +2,7 @@ const Discord = require("discord.js");
 const { sep } = require("path");
 const PFB = Discord.PermissionFlagsBits;
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
-const PAGELINES = 20;
+const PAGE_LINES = 20;
 
 Number.prototype.mod = function (n) {
     "use strict";
@@ -49,26 +49,26 @@ module.exports = {
 
         let campList = (await ia.client.util.cacheCamps(ia.client)).filter(campFilter);
         let currentPage = 0,
-            pages = Math.ceil(campList.length / PAGELINES);
+            pages = Math.ceil(campList.length / PAGE_LINES);
         let campPages = [];
 
         if (!campList.length) return await ia.editReply({ embeds: [ia.embed.setDescription("No result found.")] });
         campList = campList.sort((a, b) => (a.isOS == b.isOS ? a.name.localeCompare(b.name, "vi", { sensitivity: "accent" }) : a.isOS ? -1 : 1));
-        for (let i = 0; i <= Math.floor(campList.length / PAGELINES); i++) {
+        for (let i = 0; i <= Math.floor(campList.length / PAGE_LINES); i++) {
             let pageI = "";
-            for (let j = PAGELINES * i; j < Math.min(campList.length, PAGELINES * (i + 1)); j++)
+            for (let j = PAGE_LINES * i; j < Math.min(campList.length, PAGE_LINES * (i + 1)); j++)
                 pageI +=
                     `\`${String(j + 1).padStart(Math.floor(Math.log10(currentPage + 1)) + 2, "0")}\` - \`` +
                     `${campList[j].name}\` ${campList[j].isOS ? "(OS) " : ""}(${campList[j].isVoice ? "Voice" : "Text"})\n`;
             campPages.push(pageI);
         }
-        let buttonFilter = (bia) => bia.isButton() && bia.user.id == ia.user.id && [`${ia.cid}=prev`, `${ia.cid}=next`].includes(bia.customId);
+        let buttonFilter = (bia) => bia.isButton() && bia.user.id == ia.user.id && [`${ia.id}=prev`, `${ia.id}=next`, `${ia.id}=done`].includes(bia.customId);
         const row = new Discord.ActionRowBuilder().addComponents(
-            new Discord.ButtonBuilder().setCustomId(`${ia.cid}=prev`).setLabel("PREV").setStyle(Discord.ButtonStyle.Primary),
-            new Discord.ButtonBuilder().setCustomId(`${ia.cid}=next`).setLabel("NEXT").setStyle(Discord.ButtonStyle.Primary),
-            new Discord.ButtonBuilder().setCustomId(`${ia.cid}=done`).setLabel("DONE").setStyle(Discord.ButtonStyle.Danger)
+            new Discord.ButtonBuilder().setCustomId(`${ia.id}=prev`).setLabel("PREV").setStyle(Discord.ButtonStyle.Primary),
+            new Discord.ButtonBuilder().setCustomId(`${ia.id}=next`).setLabel("NEXT").setStyle(Discord.ButtonStyle.Primary),
+            new Discord.ButtonBuilder().setCustomId(`${ia.id}=done`).setLabel("DONE").setStyle(Discord.ButtonStyle.Danger)
         );
-        if (campList.length > PAGELINES) {
+        if (campList.length > PAGE_LINES) {
             // TODO: remove page option; add two buttons PREV and NEXT and their listeners; pagination;
             // button ia collector on channel; timeout 2 minutes; delete buttons on end;
             // let currentPage = 0;
