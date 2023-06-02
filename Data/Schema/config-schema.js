@@ -1,15 +1,15 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const ConfigSchema = new mongoose.Schema({
-    _id: String,
-    developerMode: Boolean,
-    archiveCat: String,
+  _id: String,
+  developerMode: Boolean,
+  archiveCat: String,
 });
 
 let Config;
 try {
-    Config = mongoose.model("Config");
+  Config = mongoose.model("Config");
 } catch (err) {
-    Config = mongoose.model("Config", ConfigSchema, "config");
+  Config = mongoose.model("Config", ConfigSchema, "config");
 }
 module.exports = Config;

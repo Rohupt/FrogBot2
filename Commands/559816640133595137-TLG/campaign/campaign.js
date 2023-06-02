@@ -4,7 +4,7 @@ const PFB = Discord.PermissionFlagsBits;
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 
 module.exports = {
-    authority: "everyone",
-    botPermissions: [],
-    data: new Discord.SlashCommandBuilder().setName(name).setDescription("Campaign-related commands."),
+  authority: "everyone",
+  botPermissions: [],
+  data: new Discord.SlashCommandBuilder().setName(name).setDescription("Campaign-related commands."),
 };
