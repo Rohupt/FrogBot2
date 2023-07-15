@@ -9,7 +9,7 @@ module.exports = {
   botPermissions: [PFB.ManageChannels, PFB.ManageRoles],
   data: new Discord.SlashCommandSubcommandBuilder()
     .setName(name)
-    .setDescription("Remove players.")
+    .setDescription("Add players.")
     .addStringOption((o) =>
       o
         .setName("campaign")
@@ -18,12 +18,12 @@ module.exports = {
         .setMaxLength(45)
         .setRequired(true)
     )
-    .addUserOption((o) => o.setName("p1").setDescription("The player to be removed.").setRequired(true))
-    .addUserOption((o) => o.setName("p2").setDescription("The player to be removed."))
-    .addUserOption((o) => o.setName("p3").setDescription("The player to be removed."))
-    .addUserOption((o) => o.setName("p4").setDescription("The player to be removed."))
-    .addUserOption((o) => o.setName("p5").setDescription("The player to be removed."))
-    .addUserOption((o) => o.setName("p6").setDescription("The player to be removed.")),
+    .addUserOption((o) => o.setName("p1").setDescription("The player to be added.").setRequired(true))
+    .addUserOption((o) => o.setName("p2").setDescription("The player to be added."))
+    .addUserOption((o) => o.setName("p3").setDescription("The player to be added."))
+    .addUserOption((o) => o.setName("p4").setDescription("The player to be added."))
+    .addUserOption((o) => o.setName("p5").setDescription("The player to be added."))
+    .addUserOption((o) => o.setName("p6").setDescription("The player to be added.")),
   async execute(ia) {
     let tlg = ia.client.util.reloadFile("@data/tlg.json");
     let campArg = await ia.options.getString("campaign");
@@ -32,30 +32,21 @@ module.exports = {
     await ia.deferReply();
     let camp = await ia.client.util.findCamp(campArg);
     if (!camp) return ia.editReply({ content: "Cannot find the campaign. Please recheck the name provided." });
-    if (ia.user.id != camp.DM && !ia.member.roles.cache.some((r) => r.id == tlg.modRoleID) && !ia.member.permissions.has("ADMINISTRATOR")) {
+    if (ia.user.id != camp.DM && !ia.member.roles.cache.some((r) => r.id == tlg.modRoleID) && !ia.member.permissions.has(PFB.Administrator)) {
       return await ia.editReply({
         embeds: [ia.embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.")],
       });
     }
 
-    let rmvList = [],
-      rmvdList = "|",
+    let addList = [],
+      addedList = "|",
       mem;
-    for (let i = 1; i <= 6; i++) if (!!(mem = ia.options.getMember(`p${i}`)) && camp.players.filter((p) => p.id == mem.id)) rmvList.push(mem);
+    for (let i = 1; i <= 6; i++) if (!!(mem = ia.options.getMember(`p${i}`)) && !camp.players.find((p) => p.id == mem.id)) addList.push(mem);
 
-    const campRoleMaxPos = (await ia.guild.roles.fetch(tlg.noCampRoleID)).position,
-      campRoleMinPos = (await ia.guild.roles.fetch(tlg.advLeagueRoleCatID)).position;
-
-    for await (mem of rmvList) {
-      await Promise.all([
-        mem.roles.remove(camp.role),
-        !mem.roles.cache.some((r) => r.position > campRoleMinPos && r.position < campRoleMaxPos) ? mem.roles.add(tlg.noCampRoleID) : Promise.resolve(),
-      ]);
-      camp.players.splice(
-        camp.players.findIndex((p) => p.id == mem.id),
-        1
-      );
-      rmvdList += ` ${mem} |`;
+    for await (mem of addList) {
+      await Promise.all([mem.roles.add(camp.role), mem.roles.remove(tlg.noCampRoleID)]);
+      camp.players.push({ id: mem.id, sheet: "", token: "" });
+      addedList += ` ${mem} |`;
     }
 
     try {
@@ -71,7 +62,7 @@ module.exports = {
       .setTitle(camp.name)
       .setDescription("Modification completed. Please check:")
       .addFields([
-        { name: "Players removed", value: rmvList.length ? rmvdList : "None" },
+        { name: "Players added", value: addList.length ? addedList : "None" },
         { name: "Current players list", value: camp.players.length ? resultField : "None" },
       ]);
 

@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const mongoose = require("@util/mongoose.js");
+const mongoose = require("@/mongoose.js");
 
 module.exports = {
   once: true,

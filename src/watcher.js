@@ -2,8 +2,8 @@ const Discord = require("discord.js");
 const chokidar = require("chokidar");
 const _ = require("lodash");
 const async = require("async");
-const watcher = chokidar.watch(".", { ignored: ["./Test", /(^|[\/\\])\../, "./node_modules", "./watcher.js"], cwd: "." });
-var client;
+const watcher = chokidar.watch("./src", { ignored: [/(^|[\/\\])\../, /watcher\.js/], cwd: "." });
+let client;
 
 function optionIndex(options, name) {
   return (options.findIndex((o) => o.name == name) + 1 || options.length + 1) - 1;
@@ -124,7 +124,7 @@ watcher.add = async (filePath) => {
   switch (dirs[dirs.length - 1]) {
     case "Commands":
       if (fileType != "js") break;
-      const command = require(`./${filePath}`);
+      const command = require(`@root/${filePath}`);
       const [type, dataType, lacks, pass] = checkCommand(dirs, command);
       command.guild = dirs.getGuild();
       if (type < 0) command.subcommands = new Discord.Collection();
@@ -200,7 +200,7 @@ watcher.add = async (filePath) => {
       break;
     case "Events":
       if (fileType != "js") break;
-      const event = require(`./${filePath}`);
+      const event = require(`@root/${filePath}`);
       if (!client.listenerCount(Discord.Events[dirs[0]])) {
         client[event.once ? "once" : "on"](Discord.Events[dirs[0]], async (...args) => event.execute(...args));
         if (watcher.isReady) client.log("WATCHER", `Added Event: ${dirs[0]}`);
@@ -214,7 +214,7 @@ watcher.add = async (filePath) => {
       break;
     case "Data":
       if (fileType == "json") {
-        client.data[dirs[0]] = require(`./${filePath}`);
+        client.data[dirs[0]] = require(`@root/${filePath}`);
         if (watcher.isReady) client.log("WATCHER", `Added ${dirs.getName(2)}`);
       }
       break;
@@ -229,7 +229,7 @@ watcher.change = async (filePath) => {
   switch (dirs[dirs.length - 1]) {
     case "Commands":
       if (fileType != "js") break;
-      const command = require(`./${filePath}`);
+      const command = require(`@root/${filePath}`);
       const [type, dataType, lacks, pass] = checkCommand(dirs, command);
       let record, obj, sub, group, hc;
       let guildCommands = client.commandData.ensure(dirs.getGuild(), () => new Discord.Collection());
@@ -335,7 +335,7 @@ watcher.change = async (filePath) => {
       }
       break;
     case "Events":
-      const event = require(`./${filePath}`);
+      const event = require(`@root/${filePath}`);
       client.removeAllListeners(Discord.Events[dirs[0]]);
       client[event.once ? "once" : "on"](Discord.Events[dirs[0]], async (...args) => event.execute(...args));
       client.log("WATCHER", `Updated Event: ${dirs.getName(1)}`);
@@ -348,7 +348,7 @@ watcher.change = async (filePath) => {
       break;
     case "Data":
       if (fileType == "json") {
-        client.data[dirs[0]] = require(`./${filePath}`);
+        client.data[dirs[0]] = require(`@root/${filePath}`);
         client.log("WATCHER", `Updated ${dirs.getName(1)}`);
       }
       break;
@@ -363,9 +363,9 @@ watcher.unlink = async (filePath) => {
   switch (dirs[dirs.length - 1]) {
     case "Commands":
       if (fileType != "js") break;
-      const command = require(`./${filePath}`);
-      const [type, dataType, lacks, pass] = checkCommand(dirs, command);
-      let record, obj, sub, group, hc;
+      const command = require(`@root/${filePath}`);
+      const [type, , , ] = checkCommand(dirs, command);
+      let record;
       let hasChanged = false;
       switch (type) {
         // Normal command

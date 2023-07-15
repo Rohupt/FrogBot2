@@ -32,7 +32,7 @@ module.exports = {
     await ia.deferReply();
     let camp = await ia.client.util.findCamp(campArg);
     if (!camp) return ia.editReply({ content: "Cannot find the campaign. Please recheck the name provided." });
-    if (ia.user.id != camp.DM && !ia.member.roles.cache.some((r) => r.id == tlg.modRoleID) && !ia.member.permissions.has("ADMINISTRATOR")) {
+    if (ia.user.id != camp.DM && !ia.member.roles.cache.some((r) => r.id == tlg.modRoleID) && !ia.member.permissions.has(PFB.Administrator)) {
       return await ia.editReply({
         embeds: [ia.embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.")],
       });

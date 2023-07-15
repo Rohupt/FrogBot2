@@ -19,7 +19,7 @@ module.exports = {
     let camp = await ia.client.util.findCamp(name, ia.client.util.camps);
     ia.client.log("523", camp);
     if (!camp) return ia.reply({ embeds: [ia.embed.setDescription("Couldn't find the camp. Please check the name again.")], ephemeral: true });
-    if (ia.user.id != camp.DM && !ia.member.roles.cache.some((r) => r.id == tlg.modRoleID) && !ia.member.permissions.has("ADMINISTRATOR")) {
+    if (ia.user.id != camp.DM && !ia.member.roles.cache.some((r) => r.id == tlg.modRoleID) && !ia.member.permissions.has(PFB.Administrator)) {
       ia.embed.setDescription("You are not the Dungeon Master of this camp, nor a moderator.\nYou cannot use this command.");
       return ia.editReply({ embeds: [ia.embed] });
     }

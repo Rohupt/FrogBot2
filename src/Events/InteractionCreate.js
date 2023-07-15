@@ -1,14 +1,26 @@
 const Discord = require("discord.js");
 const PFB = Discord.PermissionFlagsBits;
+const ACOT = Discord.ApplicationCommandOptionType;
 const { pickRandom } = require("mathjs");
 
+function flattenOptions(options) {
+  if (!options.find((o) => o.options)) return options;
+  let tempOptions = options.filter((o) => !o.options);
+  options.filter((o) => o.options).forEach((o) => tempOptions.push(...flattenOptions(o.options)));
+  tempOptions.forEach((o) => (o.value = o.attachment?.name ?? o.role?.name ?? o.channel?.name ?? o.member?.displayName ?? o.user?.username ?? o.value));
+  return tempOptions;
+}
+
 function commandLog(ia, subcommand, subgroup) {
+  const data = flattenOptions(ia.options.data);
+  const maxLength = Math.max(...data.map((o2) => o2.name.length));
   return (
-    `${ia.commandName}${subgroup ? " | " + subgroup : ""}${subcommand ? " | " + subcommand : ""}\n` +
-    `        Guild   : ${ia.guild?.name ?? "None"}${ia.guild ? " (" + ia.guildId + ")" : ""}\n` +
-    `        Channel : ${ia.guild ? ia.channel.name : "Direct Message"} (${ia.channelId})\n` +
-    `        Caller  : ${ia.user.tag} (${ia.user.id})\n` +
-    `        Time    : ${ia.createdAt.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })} GMT+7`
+    `${ia.commandName}${subgroup ? " | " + subgroup : ""}${subcommand ? " | " + subcommand : ""}` +
+    `\n        Options : ${data.map((o) => `\n                ${o.name.padEnd(maxLength)} : ${`${o.value}`.slice(0, 20)}`)}` +
+    `\n        Guild   : ${ia.guild?.name ?? "None"}${ia.guild ? " (" + ia.guildId + ")" : ""}` +
+    `\n        Channel : ${ia.guild ? ia.channel.name : "Direct Message"} (${ia.channelId})` +
+    `\n        Caller  : ${ia.member.displayName ?? ia.user.username} (${ia.user.id})` +
+    `\n        Time    : ${ia.createdAt.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })} GMT+7`
   );
 }
 

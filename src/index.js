@@ -5,10 +5,11 @@ const chokidar = require("chokidar");
 
 const client = require("./client.js");
 
-const watcherWatcher = chokidar.watch("./watcher.js", { cwd: "." });
+const watcherWatcher = chokidar.watch("./src/watcher.js", { cwd: "." });
 let watcher = require("./watcher.js");
 watcher.client = client;
 watcher.isReady = false;
+
 async function reloadWatcher(filePath) {
   if (watcher.isReady)
     await watcher.close().then(() => {
@@ -21,8 +22,8 @@ async function reloadWatcher(filePath) {
       // client.reloadCommands();
       watcher = null;
     });
-  delete require.cache[require.resolve(`./${filePath}`)];
-  watcher = require(`./${filePath}`);
+  delete require.cache[require.resolve(`@root/${filePath}`)];
+  watcher = require(`@root/${filePath}`);
   watcher.client = client;
   client.watcherResetTime = performance.now();
   client.log("STARTED", `Watcher started`, 10);

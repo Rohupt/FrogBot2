@@ -20,15 +20,15 @@ const client = new Discord.Client({
 client.commands = new Discord.Collection();
 client.commandData = new Discord.Collection();
 client.data = {};
-client.util = require("@util/utilities.js");
+client.util = require("@/utilities.js");
 
 client.handleFilePath = (filePath, deleteCache = false) => {
-  const dirs = filePath.split(sep).reverse();
+  const dirs = filePath.split(sep).slice(1).reverse();
   const fileType = dirs[0].replace(/^[^/.]+\./, "");
   dirs[0] = dirs[0].replace(/\.[^/.]+$/, "");
   dirs.getPath = (start, end) => dirs.slice(start, end).reverse().join("/");
 
-  if (deleteCache) delete require.cache[require.resolve(`./${filePath}`)];
+  if (deleteCache) delete require.cache[require.resolve(`@root/${filePath}`)];
   // Mode: 0 - nothing; 1 - name; 2 - subcommand group; 3 - command; 4 - guild included
   dirs.getName = (type, mode = 4) => dirs.getPath(type < 0 ? 1 : 0, Math.min(mode, dirs.length - 1));
   dirs.getGroup = (guildIncluded = true) => (dirs[dirs.length - 1] != "Commands" ? null : dirs.getPath(dirs.length - 2, dirs.length - (guildIncluded ? 1 : 2)));
