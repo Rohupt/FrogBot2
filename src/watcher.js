@@ -364,7 +364,7 @@ watcher.unlink = async (filePath) => {
     case "Commands":
       if (fileType != "js") break;
       const command = require(`@root/${filePath}`);
-      const [type, , , ] = checkCommand(dirs, command);
+      const [type, , ,] = checkCommand(dirs, command);
       let record;
       let hasChanged = false;
       switch (type) {

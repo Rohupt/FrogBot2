@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const { sep } = require("path");
+const _ = require("lodash");
 const PFB = Discord.PermissionFlagsBits;
 const name = __filename.split(sep)[__filename.split(sep).length - 1].replace(/\.[^/.]+$/, "");
 const CampModel = require("@data/Schema/camp-schema.js");
@@ -26,11 +27,11 @@ module.exports = {
     .addUserOption((o) => o.setName("p6").setDescription("The player to be removed.")),
   async execute(ia) {
     let tlg = ia.client.util.reloadFile("@data/tlg.json");
-    let campArg = await ia.options.getString("campaign");
+    let campArg = ia.options.getString("campaign");
     if (campArg == "-this") campArg = ia.channelId;
 
     await ia.deferReply();
-    let camp = await ia.client.util.findCamp(campArg);
+    const camp = await ia.client.util.findCamp(campArg);
     if (!camp) return ia.editReply({ content: "Cannot find the campaign. Please recheck the name provided." });
     if (ia.user.id != camp.DM && !ia.member.roles.cache.some((r) => r.id == tlg.modRoleID) && !ia.member.permissions.has(PFB.Administrator)) {
       return await ia.editReply({
@@ -38,24 +39,30 @@ module.exports = {
       });
     }
 
-    let rmvList = [],
-      rmvdList = "|",
-      mem;
-    for (let i = 1; i <= 6; i++) if (!!(mem = ia.options.getMember(`p${i}`)) && camp.players.filter((p) => p.id == mem.id)) rmvList.push(mem);
-
-    const campRoleMaxPos = (await ia.guild.roles.fetch(tlg.noCampRoleID)).position,
-      campRoleMinPos = (await ia.guild.roles.fetch(tlg.advLeagueRoleCatID)).position;
-
-    for await (mem of rmvList) {
-      await Promise.all([
-        mem.roles.remove(camp.role),
-        !mem.roles.cache.some((r) => r.position > campRoleMinPos && r.position < campRoleMaxPos) ? mem.roles.add(tlg.noCampRoleID) : Promise.resolve(),
-      ]);
+    const rmvList = await Promise.all(
+      [...ia.options.resolved.members.filter((mem) => camp.players.find((p) => p.id == mem.id)).values()].map((mem) => mem.fetch(true))
+    );
+    const rmvdList = `| ${rmvList.join(" | ")} |`;
+    rmvList.forEach((mem) =>
       camp.players.splice(
         camp.players.findIndex((p) => p.id == mem.id),
         1
-      );
-      rmvdList += ` ${mem} |`;
+      )
+    );
+    const campRoleMaxPos = (await ia.guild.roles.fetch(tlg.noCampRoleID)).position;
+    const campRoleMinPos = (await ia.guild.roles.fetch(tlg.advLeagueRoleCatID)).position;
+
+    while (true) {
+      const promises = [];
+      promises.push(...rmvList.filter((mem) => mem.roles.cache.has(camp.role)).map((mem) => mem.roles.remove(camp.role)));
+      promises.push(
+        ...rmvList
+        .filter((mem) => !(mem.roles.cache.some((r) => r.position > campRoleMinPos && r.position <= campRoleMaxPos)))
+        .map((mem) => mem.roles.add(tlg.noCampRoleID))
+        );
+      if (promises.length == 0) break;
+      rmvList.length = 0;
+      rmvList.push(..._.uniqBy(_.compact(await Promise.all(promises)), (e) => e.id));
     }
 
     try {

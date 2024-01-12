@@ -19,7 +19,7 @@ module.exports = {
     ),
   async execute(ia) {
     let tlg = ia.client.util.reloadFile("@data/tlg.json");
-    let campArg = await ia.options.getString("campaign");
+    let campArg = ia.options.getString("campaign");
     if (campArg == "-this") campArg = ia.channelId;
 
     await ia.deferReply();
